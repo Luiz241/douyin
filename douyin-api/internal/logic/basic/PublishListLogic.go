@@ -56,9 +56,9 @@ func (l *PublishListLogic) PublishList(req *types.Douyin_publish_list_request) (
 				Follower_count: res[i].FollowerCount,
 				Is_follow:      res[i].IsFollow == 0,
 			},
-			Play_url: res[i].PlayUrl,
-			// Cover_url:      res[i].CoverUrl, //todo: cover
-			Cover_url:      "http://10.0.2.2:8888/douyin/static/spec2.jpg",
+			Play_url:  res[i].PlayUrl,
+			Cover_url: res[i].CoverUrl,
+			//Cover_url:      "http://10.0.2.2:8888/douyin/static/spec2.jpg",
 			Favorite_count: res[i].FavoriteCount,
 			Comment_count:  res[i].CommentCount,
 			Is_favorite:    res[i].IsFavorite == 0,
