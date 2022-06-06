@@ -1,0 +1,20 @@
+Name: douyin-api
+Host: 0.0.0.0
+Port: 8888
+
+MaxBytes: 10240000
+
+DB:
+  DataSource: root:123456@tcp(localhost:3306)/douyin?parseTime=True
+
+#Cache:
+#  - Host: 43.155.101.162:16379
+#    Pass: 554766381qwe
+
+Auth:
+  AccessSecret: b65bba6c-a78e-4740-abce-81ed3c04a3cb
+  AccessExpire: 3600
+
+StaticPath: E:\\public
+
+PlayPath: http://10.0.2.2:8888/douyin/static/

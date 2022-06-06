@@ -1,0 +1,261 @@
+syntax = "v1"
+
+info(
+	title: "douyin"
+	desc: "douyin"
+	author: "luiz"
+	version: "1.0"
+)
+
+type (
+	User {
+		Id             int64  `json:"id"`
+		Name           string `json:"name"`
+		Follow_count   int64  `json:"follow_count,optional"`
+		Follower_count int64  `json:"follower_count,optional"`
+		Is_follow      bool   `json:"is_follow"`
+	}
+
+	Video {
+		Id             int64  `json:"id"`
+		Author         User   `json:"author"`
+		Play_url       string `json:"play_url"`
+		Cover_url      string `json:"cover_url"`
+		Favorite_count int64  `json:"favorite_count"`
+		Comment_count  int64  `json:"comment_count"`
+		Is_favorite    bool   `json:"is_favorite"`
+		Title          string `json:"title"`
+	}
+
+	Comment {
+		Id          int64  `json:"id"`
+		User        User   `json:"user"`
+		Content     string `json:"content"`
+		Create_date string `json:"create_date"`
+	}
+
+	douyin_feed_request {
+		Latest_time int64  `form:"latest_time,optional"`
+		Token       string `form:"token,optional"`
+	}
+
+	douyin_feed_response {
+		Status_code int32   `json:"status_code"`
+		Status_msg  string  `json:"status_msg,optional"`
+		Video_list  []Video `json:"video_list"`
+		Next_time   int64   `json:"next_time,optional"`
+	}
+
+	douyin_user_register_request {
+		Username string `form:"username"`
+		Password string `form:"password"`
+	}
+
+	douyin_user_register_response {
+		Status_code int32  `json:"status_code"`
+		Status_msg  string `json:"status_msg,optional"`
+		User_id     int64  `json:"user_id"`
+		Token       string `json:"token"`
+	}
+
+	douyin_user_login_request {
+		Username string `form:"username"`
+		Password string `form:"password"`
+	}
+
+	douyin_user_login_response {
+		Status_code int32  `json:"status_code"`
+		Status_msg  string `json:"status_msg,optional"`
+		User_id     int64  `json:"user_id"`
+		Token       string `json:"token"`
+	}
+
+	douyin_user_request {
+		User_id int64  `form:"user_id"`
+		Token   string `form:"token"`
+	}
+
+	douyin_user_response {
+		Status_code int32  `json:"status_code"`
+		Status_msg  string `json:"status_msg,optional"`
+		User        User   `json:"user"`
+	}
+
+	douyin_publish_action_request {
+		Token string `json:"token"`
+		Data  []byte `json:"data"`
+		Title string `json:"title"`
+	}
+
+	douyin_publish_action_response {
+		Status_code int32  `json:"status_code"`
+		Status_msg  string `json:"status_msg,optional"`
+	}
+
+	douyin_publish_list_request {
+		User_id int64  `form:"user_id"`
+		Token   string `form:"token"`
+	}
+
+	douyin_publish_list_response {
+		Status_code int32   `json:"status_code"`
+		Status_msg  string  `json:"status_msg,optional"`
+		Video_list  []Video `json:"video_list"`
+	}
+
+	douyin_favorite_action_request {
+		User_id     int64  `form:"user_id"`
+		Token       string `form:"token"`
+		Video_id    int64  `form:"video_id"`
+		Action_type int32  `form:"action_type"`
+	}
+
+	douyin_favorite_action_response {
+		Status_code int32  `json:"status_code"`
+		Status_msg  string `json:"status_msg,optional"`
+	}
+
+	douyin_favorite_list_request {
+		User_id int64  `form:"user_id"`
+		Token   string `form:"token"`
+	}
+
+	douyin_favorite_list_response {
+		Status_code int32   `json:"status_code"`
+		Status_msg  string  `json:"status_msg,optional"`
+		Video_list  []Video `json:"video_list"`
+	}
+
+	douyin_comment_action_request {
+		User_id      int64  `form:"user_id"`
+		Token        string `form:"token"`
+		Video_id     int64  `form:"video_id"`
+		Action_type  int32  `form:"action_type"`
+		Comment_text string `form:"comment_text,optional"`
+		Comment_id   int64  `form:"comment_id,optional"`
+	}
+
+	douyin_comment_action_response {
+		Status_code int32  `json:"status_code"`
+		Status_msg  string `json:"status_msg,optional"`
+	}
+
+	douyin_comment_list_request {
+		User_id  int64  `form:"user_id"`
+		Token    string `form:"token"`
+		Video_id int64  `form:"video_id"`
+	}
+
+	douyin_comment_list_response {
+		Status_code  int32     `json:"status_code"`
+		Status_msg   string    `json:"status_msg,optional"`
+		Comment_list []Comment `json:"comment_list"`
+	}
+
+	douyin_relation_action_request {
+		User_id     int64  `form:"user_id"`
+		Token       string `form:"token"`
+		To_user_id  string `form:"to_user_id"`
+		Action_type int32  `form:"action_type"`
+	}
+
+	douyin_relation_action_response {
+		Status_code int32  `json:"status_code"`
+		Status_msg  string `json:"status_msg,optional"`
+	}
+
+	douyin_relation_follow_list_request {
+		User_id int64  `form:"user_id"`
+		Token   string `form:"token"`
+	}
+
+	douyin_relation_follow_list_response {
+		Status_code int32  `json:"status_code"`
+		Status_msg  string `json:"status_msg,optional"`
+		User_list   []User `json:"user_list"`
+	}
+
+	douyin_relation_follower_list_request {
+		User_id int64  `form:"user_id"`
+		Token   string `form:"token"`
+	}
+
+	douyin_relation_follower_list_response {
+		Status_code int32  `json:"status_code"`
+		Status_msg  string `json:"status_msg,optional"`
+		User_list   []User `json:"user_list"`
+	}
+)
+
+@server(
+	group: basic
+	prefix: douyin
+)
+
+service douyin-api {
+	@doc "视频流接口"
+	@handler Feed
+	get /feed (douyin_feed_request) returns (douyin_feed_response)
+	
+	@doc "用户注册"
+	@handler UserRegister
+	post /user/register (douyin_user_register_request) returns (douyin_user_register_response)
+	
+	@doc "用户登录"
+	@handler UserLogin
+	post /user/login (douyin_user_login_request) returns (douyin_user_login_response)
+	
+	@doc "用户信息"
+	@handler User
+	get /user (douyin_user_request) returns (douyin_user_response)
+	
+	@doc "投稿接口"
+	@handler PublishAction
+	post /publish/action (douyin_publish_action_request) returns (douyin_publish_action_response)
+	
+	@doc "发布列表"
+	@handler PublishList
+	get /publish/list (douyin_publish_list_request) returns (douyin_publish_list_response)
+}
+
+@server(
+	group: extra1
+	prefix: douyin
+)
+
+service douyin-api {
+	@doc "赞操作"
+	@handler FavoriteAction
+	post /favorite/action (douyin_favorite_action_request) returns (douyin_favorite_action_response)
+	
+	@doc "点赞列表"
+	@handler FavoriteList
+	post /favorite/list (douyin_favorite_list_request) returns (douyin_favorite_list_response)
+	
+	@doc "评论操作"
+	@handler CommentAction
+	post /comment/action (douyin_comment_action_request) returns (douyin_comment_action_response)
+	
+	@doc "评论列表"
+	@handler CommentList
+	get /comment/list (douyin_comment_list_request) returns (douyin_comment_list_response)
+}
+
+@server(
+	group: extra2
+	prefix: douyin
+)
+
+service douyin-api {
+	@doc "关注操作"
+	@handler RelationAction
+	post /relation/action (douyin_relation_action_request) returns (douyin_relation_action_response)
+	
+	@doc "关注列表"
+	@handler RelationFollowList
+	get /relation/follow/list (douyin_relation_follow_list_request) returns (douyin_relation_follow_list_response)
+	
+	@doc "粉丝列表"
+	@handler RelationFollowerList
+	get /relation/follower/list (douyin_relation_follower_list_request) returns (douyin_relation_follower_list_response)
+}
