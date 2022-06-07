@@ -3,7 +3,7 @@ Host: 0.0.0.0
 Port: 8888
 
 MaxBytes: 10240000
-
+Timeout: 10000
 DB:
   DataSource: root:123456@tcp(localhost:3306)/douyin?parseTime=True
 

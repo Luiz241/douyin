@@ -2,6 +2,7 @@ package basic
 
 import (
 	"context"
+	"douyin/common/crypt"
 	"douyin/common/token"
 	"douyin/douyin-api/internal/svc"
 	"douyin/douyin-api/internal/types"
@@ -36,7 +37,7 @@ func (l *UserRegisterLogic) UserRegister(req *types.Douyin_user_register_request
 
 	user := &model.User{
 		UserName: req.Username,
-		Password: req.Password,
+		Password: crypt.Md5ByString(req.Password),
 	}
 
 	res, err := l.svcCtx.UserModel.Insert(l.ctx, user)

@@ -2,6 +2,7 @@ package basic
 
 import (
 	"context"
+	"douyin/common/crypt"
 	"douyin/common/token"
 	"time"
 
@@ -26,7 +27,7 @@ func NewUserLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserLog
 }
 
 func (l *UserLoginLogic) UserLogin(req *types.Douyin_user_login_request) (resp *types.Douyin_user_login_response, err error) {
-	user, err := l.svcCtx.UserModel.FindOneByNameAndPassword(l.ctx, req.Username, req.Password)
+	user, err := l.svcCtx.UserModel.FindOneByNameAndPassword(l.ctx, req.Username, crypt.Md5ByString(req.Password))
 	if err != nil {
 		return &types.Douyin_user_login_response{
 			Status_code: 1,

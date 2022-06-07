@@ -31,8 +31,8 @@ type (
 		TransInsert(ctx context.Context, session sqlx.Session, data *Relation) (sql.Result, error)
 		TransDelete(ctx context.Context, session sqlx.Session, followeeId, followerId int64) error
 		TransCtx(ctx context.Context, fn func(ctx context.Context, session sqlx.Session) error) error
-		FindAllFollowee(ctx context.Context, followerId int64) ([]*RelationUser, error)
-		FindAllFollower(ctx context.Context, followeeId int64) ([]*RelationUser, error)
+		FindAllFollowee(ctx context.Context, userId, followerId int64) ([]*RelationUser, error)
+		FindAllFollower(ctx context.Context, userId, followeeId int64) ([]*RelationUser, error)
 	}
 
 	defaultRelationModel struct {
@@ -88,25 +88,25 @@ func (m *defaultRelationModel) Update(ctx context.Context, data *Relation) error
 	return err
 }
 
-func (m *defaultRelationModel) FindAllFollower(ctx context.Context, followeeId int64) ([]*RelationUser, error) {
-	query := `select u.user_id, u.user_name, u.follow_count, u.follower_count, ISNULL(r2.follower_id) as is_follow
+func (m *defaultRelationModel) FindAllFollower(ctx context.Context, userId, followeeId int64) ([]*RelationUser, error) {
+	query := `select u.user_id, u.user_name, u.follow_count, u.follower_count, ISNULL(r2.followee_id) as is_follow
 			from relation as r
 			JOIN user as u on u.user_id = r.follower_id
-			Left JOIN relation as r2 on r2.follower_id = r.followee_id
+			Left JOIN (select followee_id from relation where follower_id = ?) as r2 on r2.followee_id = r.follower_id 
 			where r.followee_id = ?`
 	var resp []*RelationUser
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, followeeId)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, userId, followeeId)
 	return resp, err
 }
 
-func (m *defaultRelationModel) FindAllFollowee(ctx context.Context, followerId int64) ([]*RelationUser, error) {
-	query := `select u.user_id, u.user_name, u.follow_count, u.follower_count, ISNULL(r2.follower_id) as is_follow
+func (m *defaultRelationModel) FindAllFollowee(ctx context.Context, userId, followerId int64) ([]*RelationUser, error) {
+	query := `select u.user_id, u.user_name, u.follow_count, u.follower_count, ISNULL(r2.followee_id) as is_follow
 			from relation as r
 			JOIN user as u on u.user_id = r.followee_id
-			Left JOIN relation as r2 on r2.follower_id = r.followee_id
+			Left JOIN (select followee_id from relation where follower_id = ?) as r2 on r2.followee_id = r.followee_id
 			where r.follower_id = ?`
 	var resp []*RelationUser
-	err := m.conn.QueryRowsCtx(ctx, &resp, query, followerId)
+	err := m.conn.QueryRowsCtx(ctx, &resp, query, userId, followerId)
 	return resp, err
 }
 
