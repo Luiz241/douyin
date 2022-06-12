@@ -25,12 +25,9 @@ func NewRelationFollowerListLogic(ctx context.Context, svcCtx *svc.ServiceContex
 }
 
 func (l *RelationFollowerListLogic) RelationFollowerList(req *types.Douyin_relation_follower_list_request) (resp *types.Douyin_relation_follower_list_response, err error) {
-	_, err = token.ParseToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
+	userId, err := token.ParseToken(req.Token, l.svcCtx.Config.Auth.AccessSecret)
 	if err != nil {
-		return &types.Douyin_relation_follower_list_response{
-			Status_code: 1,
-			Status_msg:  "token失效",
-		}, nil
+		userId = -1
 	}
 	//if userId != req.User_id {
 	//	return &types.Douyin_relation_follower_list_response{
@@ -38,7 +35,7 @@ func (l *RelationFollowerListLogic) RelationFollowerList(req *types.Douyin_relat
 	//		Status_msg:  "用户失效",
 	//	}, nil
 	//}
-	res, err := l.svcCtx.RelationModel.FindAllFollower(l.ctx, req.User_id)
+	res, err := l.svcCtx.RelationModel.FindAllFollower(l.ctx, userId, req.User_id)
 	if err != nil {
 		return &types.Douyin_relation_follower_list_response{
 			Status_code: 3,
